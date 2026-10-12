@@ -210,11 +210,26 @@ function wordsPlacedAtCell(f,info){return [...new Set(info.slotIds.map(s=>state.
 function handleCellClick(f,row,col,info){
  const meta=META.find(m=>m.f===f&&m.row===row&&m.col===col);
  if(state.metaUnlocked&&meta&&!state.metaFound.includes(meta.n)){collectMeta(meta);return}
- if(state.selectedWord){placeSelectedAtCell(f,info);return}
+
  const placedWords=wordsPlacedAtCell(f,info);
- if(f===4&&state.rockRead&&!state.trap&&placedWords.includes('keihou')){triggerTrap();return}
- if(f===4&&state.trap&&!state.swapped&&placedWords.includes('kakei')){trySwap();return}
+
+ // メタ指示「いわのしたよめ」完成後は、警報を押せば必ず罠が作動する。
+ // 岩そのものを先にタップしたかどうかには依存させない。
+ if(f===4&&state.metaFound.length===7&&!state.trap&&placedWords.includes('keihou')){
+  triggerTrap();return
+ }
+
+ // 罠の後は、2Fから「財」を持ち帰って家系を押せば家財へ置換する。
+ // 持ち物欄で「財」を選択する操作は不要。
+ if(f===4&&state.trap&&!state.swapped&&placedWords.includes('kakei')){
+  trySwap();return
+ }
+
  if(f===1&&state.trap&&state.swapped&&placedWords.includes('zaihou')){finishGame();return}
+
+ // 特殊イベントを先に判定してから、通常の配置・取り外し操作へ進む。
+ if(state.selectedWord){placeSelectedAtCell(f,info);return}
+
  if(placedWords.length===1){
   const wordId=placedWords[0],slotId=placedSlotForWord(f,wordId);
   if(slotId){pushBoardHistory(f);delete state.placements[f][slotId];state.selectedWord=wordId;toast(wordDef(f,wordId).r+' を外した');render()}
@@ -264,7 +279,7 @@ function renderMeta(){const box=document.getElementById('meta'),slots=document.g
 function collectMeta(m){if(!state.metaUnlocked)return;if(!state.metaFound.includes(m.n)){state.metaFound.push(m.n);state.metaFound.sort((a,b)=>a-b);toast(`${['','①','②','③','④','⑤','⑥','⑦'][m.n]} ${m.ch}`);render()}}
 function readRock(){if(!state.metaUnlocked){toast('大きな岩だ。びくともしない。');return}if(state.metaFound.length<7){toast('大きな岩だ。びくともしない。');return}if(state.swapped){state.finalRead=true;toast('岩の下を、もう一度確かめる');}else{state.rockRead=true;toast('岩の下へ、空洞が続いている');}render()}
 function triggerTrap(){if(state.trap)return;state.trap=true;modal('警報が鳴り響いた！','足元が崩れた。\n\n気がつくと、1Fまで落とされていた。',()=>{state.floor=1;render()});render()}
-function trySwap(){if(!state.trap||state.swapped)return;if(state.invSelected!=='財'){toast('何か使えそうなものがあれば……');return}if(!state.inventory.includes('財'))return;state.inventory=state.inventory.filter(x=>x!=='財');state.invSelected=null;state.swapped=true;state.finalRead=true;toast('家系 → 家財');modal('家財','「系」を外し、「財」をはめた。');render()}
+function trySwap(){if(!state.trap||state.swapped)return;if(!state.inventory.includes('財')){toast('何か使えそうなものがあれば……');return}state.inventory=state.inventory.filter(x=>x!=='財');state.invSelected=null;state.swapped=true;state.finalRead=true;toast('家系 → 家財');modal('家財','「系」を外し、「財」をはめた。');render()}
 function finishGame(){if(state.clear)return;state.clear=true;modal('財宝を見つけた！','上へ上へと進んだ末、宝は最初の階に眠っていた。\n\nCLEAR');render()}
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),1500)}
 function modal(title,text,after){const m=document.getElementById('modal');document.getElementById('modalTitle').textContent=title;document.getElementById('modalText').textContent=text||'';m.classList.add('show');const btn=document.getElementById('modalBtn');btn.onclick=()=>{m.classList.remove('show');if(after)after()}}
