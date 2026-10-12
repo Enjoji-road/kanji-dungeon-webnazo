@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>漢字ダンジョン 試作版</title>
+<title>漢字ダンジョン</title>
 <style>
 :root{--bg:#160d08;--panel:#2a1a12;--stone:#3a291f;--line:#71533c;--ink:#f3e5cc;--muted:#b7a188;--gold:#d5a85f;--teal:#9aa673;--danger:#c87767;--cell:clamp(24px,7.5vw,42px)}
 *{box-sizing:border-box}html,body{margin:0;background:radial-gradient(circle at 50% -10%,#4a2f1d 0,#2a190f 30%,#140b07 72%);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif}body{min-height:100vh}
@@ -21,7 +21,7 @@ button{font:inherit}.app{max-width:760px;margin:auto;padding:18px 14px 80px}.tit
 </head>
 <body>
 <div class="app">
-  <div class="title"><div><h1>漢字ダンジョン</h1><div class="subtitle">試作版 / 熟語を作り、読みを埋める</div></div><button class="reset" id="resetBtn">最初から</button></div>
+  <div class="title"><div><h1>漢字ダンジョン</h1><div class="subtitle">熟語を作り、読みを埋める</div></div><button class="reset" id="resetBtn">最初から</button></div>
   <div class="tabs" id="tabs"></div>
   <div class="panel">
     <div class="status"><div class="floorname" id="floorName"></div><div class="count" id="count"></div></div>
@@ -31,7 +31,6 @@ button{font:inherit}.app{max-width:760px;margin:auto;padding:18px 14px 80px}.tit
     <button class="stairs" id="stairs">階段を上る</button>
     <div class="meta" id="meta"><div class="slots" id="slots"></div></div>
   </div>
-  <div class="tiny">※これは挙動確認用の試作。見た目・演出・語彙はあとから差し替え可能。</div>
 </div>
 <div class="toast" id="toast"></div>
 <div class="modal" id="modal"><div class="modal-card"><h2 id="modalTitle"></h2><p id="modalText"></p><button id="modalBtn">閉じる</button></div></div>
